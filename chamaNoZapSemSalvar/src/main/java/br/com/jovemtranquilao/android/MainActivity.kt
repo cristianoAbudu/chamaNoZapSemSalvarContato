@@ -6,16 +6,12 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,12 +26,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.jovemtranquilao.Greeting
 
 
 //https://kotlinlang.org/docs/multiplatform-mobile-create-first-app.html#examine-the-project-structure
@@ -79,7 +73,9 @@ fun GreetingView(context: ComponentActivity) {
             value = telefone,
             label = { Text("Telefone") },
             onValueChange = {
-                telefone = it
+                telefone = it.replace(Regex("^(\\d{2})(\\d{2})(\\d)(\\d{4})(\\d{4})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]} ${it.groupValues[4]}-${it.groupValues[5]}"
+                }
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
@@ -94,7 +90,7 @@ fun GreetingView(context: ComponentActivity) {
             }
         }
 
-        Column(
+        Row(
         ) {
             Button(onClick = {
                 val sendIntent = Intent().apply {
