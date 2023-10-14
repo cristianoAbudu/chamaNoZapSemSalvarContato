@@ -58,7 +58,8 @@ fun DefaultPreview() {
 @Composable
 fun GreetingView(context: ComponentActivity) {
 
-    var telefone: String by remember { mutableStateOf("") }
+    //TODO: descobrir o estado pela geolocalizacao do dispositivo e colocar automaticamente o DDD
+    var telefone: String by remember { mutableStateOf("+55 (11) ") }
 
     Column(
     ) {
@@ -73,11 +74,96 @@ fun GreetingView(context: ComponentActivity) {
             value = telefone,
             label = { Text("Telefone") },
             onValueChange = {
-                telefone = it.replace(Regex("^(\\d{2})(\\d{2})(\\d)(\\d{4})(\\d{4})$")) {
-                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]} ${it.groupValues[4]}-${it.groupValues[5]}"
+                var limpo = limpar(it)
+
+
+                if(limpo.length == 0) {
+                    telefone = it
                 }
+
+                else if(limpo.length == 1) {
+                    telefone = limpo.replace(Regex("^(\\d)$")) {
+                        "+${it.groupValues[1]}"
+                    }
+                }
+
+                else if(limpo.length == 2) {
+                    telefone = limpo.replace(Regex("^(\\d{2})$")) {
+                        "+${it.groupValues[1]}"
+                    }
+                }
+
+                else if(limpo.length == 3) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d)$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]})"
+                    }
+                }
+
+                else if(limpo.length == 4) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]})"
+                    }
+                }
+
+                else if(limpo.length == 5) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d)$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}"
+                    }
+                }
+
+                else if(limpo.length == 6) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d{2})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}"
+                    }
+                }
+
+                else if(limpo.length == 7) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d{3})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}"
+                    }
+                }
+
+                else if(limpo.length == 8) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d{4})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}"
+                    }
+                }
+
+                else if(limpo.length == 9) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d{4})(\\d)$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}-${it.groupValues[4]}"
+                    }
+                }
+
+                else if(limpo.length == 10) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d{4})(\\d{2})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}-${it.groupValues[4]}"
+                    }
+                }
+
+                else if(limpo.length == 11) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d{4})(\\d{3})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}-${it.groupValues[4]}"
+                    }
+                }
+
+                else if(limpo.length == 12) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d{4})(\\d{4})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]}-${it.groupValues[4]}"
+                    }
+                }
+
+                else if(limpo.length == 13) {
+                    telefone = limpo.replace(Regex("^(\\d{2})(\\d{2})(\\d)(\\d{4})(\\d{4})$")) {
+                        "+${it.groupValues[1]} (${it.groupValues[2]}) ${it.groupValues[3]} ${it.groupValues[4]}-${it.groupValues[5]}"
+                    }
+                }
+
+
             },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.NumberPassword
+            ),
         )
 
         DisposableEffect(Unit) {
@@ -96,7 +182,7 @@ fun GreetingView(context: ComponentActivity) {
                 val sendIntent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, "Hello Swapz")
-                    putExtra("jid", telefone + "@s.whatsapp.net")
+                    putExtra("jid", limpar(telefone) + "@s.whatsapp.net")
                     type = "text/plain"
                     setPackage("com.whatsapp")
                 }
@@ -110,7 +196,7 @@ fun GreetingView(context: ComponentActivity) {
             }) { Text("Whatsapp") }
 
             Button(onClick = {
-                val urlString = "http://wa.me/" + telefone
+                val urlString = "http://wa.me/" + limpar(telefone)
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlString))
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.setPackage("com.android.chrome")
@@ -128,6 +214,14 @@ fun GreetingView(context: ComponentActivity) {
     }
 
 
+}
+
+fun limpar(telefone: String): String {
+    var retorno =  telefone.replace("+", "");
+    retorno =  retorno.replace(" ", "")
+    retorno =  retorno.replace("(", "")
+    retorno =  retorno.replace(")", "")
+    return retorno.replace("-", "");
 }
 
 
