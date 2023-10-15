@@ -6,6 +6,10 @@ struct ContentView: View {
 
 	var body: some View {
 		Text(greet)
+        
+        TextField(
+            
+        )
 	}
 }
 
