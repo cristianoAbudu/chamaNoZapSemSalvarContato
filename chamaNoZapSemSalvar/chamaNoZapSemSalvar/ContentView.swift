@@ -3,29 +3,30 @@ import shared
 
 struct ContentView: View {
 
+    
     @State private var telefone: String = ""
     
 	var body: some View {
         
-        var text = ""
-
         TextField(
-            "User name (email address)",
+            "Telefone com DDD",
             text: $telefone
         )
         .disableAutocorrection(true)
+        .keyboardType(.numberPad)
+        .multilineTextAlignment(.center)
         
-        Button("Greeting") {
-            openWhatsapp()
+        Button("Chamar no Whats") {
+            openWhatsapp(telefone: telefone)
         }
         
 	}
 }
 
-func openWhatsapp(){
-    let urlWhats = "whatsapp://send?phone=(mobile number with country code)"
+func openWhatsapp(telefone: String){
+    let urlWhats = "whatsapp://send?phone="+telefone
     if let urlString = urlWhats.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed){
-        if let whatsappURL = URL(string: urlString) {
+        if var whatsappURL = URL(string: urlString) {
             if UIApplication.shared.canOpenURL(whatsappURL){
                 if #available(iOS 10.0, *) {
                     UIApplication.shared.open(whatsappURL, options: [:], completionHandler: nil)
@@ -34,7 +35,15 @@ func openWhatsapp(){
                 }
             }
             else {
-                print("Install Whatsapp")
+                
+                whatsappURL = URL(string: "http://wa.me/"+telefone)!
+                
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(whatsappURL, options: [:], completionHandler: nil)
+                } else {
+                    UIApplication.shared.openURL(whatsappURL)
+                }
+                
             }
         }
     }
